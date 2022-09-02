@@ -1,0 +1,25 @@
+@import "./common.css";
+
+.popup-container {
+  width: 100%;
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.popup {
+  padding: 20px;
+  text-align: center;
+  width: 400px;
+  height: 130px;
+  margin: 0 auto;
+  background-color: rgba(0,0,0,0.5);
+  border-radius: 30px;
+}
+
+.popup-text {
+  font-size: 35px;
+  margin-top: 10px;
+  color: #fff;
+}
