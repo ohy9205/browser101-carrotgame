@@ -37,12 +37,12 @@ body {
   justify-content: center;
 }
 
-.carrot-number-container {
+.carrot-counter-container {
   padding-top: 10px;
   text-align: center;
 }
 
-.carrot-number {
+.carrot-counter {
   display: flex;
   align-items: center;
   justify-content: center;
