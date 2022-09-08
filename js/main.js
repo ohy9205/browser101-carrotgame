@@ -6,9 +6,12 @@ const mainContainer = document.querySelector('.main-container');
 const main = document.querySelector('.main');
 const body = document.querySelector('body');
 
+const audio = document.createElement('audio');
+const audio2 = document.createElement('audio');
+
 let stopBtn;
 
-let carrotCount = 10;
+let carrotCount;
 let time;
 let interval;
 
@@ -33,6 +36,7 @@ function startGame() {
   carrotCounting();
   
   // 음악
+  playSound('play');
 }
 
 function stopGame(popupText) {
@@ -45,12 +49,35 @@ function stopGame(popupText) {
 }
 
 
+// 입력 data set에따라서 사운드가 다르게 나오게...
+function playSound(type) {
+
+  if(type === 'play') {
+    audio.setAttribute('src', './sound/bg.mp3');
+    audio.play();
+  } else if (type === 'lose' || type === 'pause') {
+    audio.setAttribute('src', './sound/alert.wav');
+    audio.play();
+  } else if (type === 'bug') {
+    audio.setAttribute('src', './sound/bug_pull.mp3');
+    audio.play();
+  } else if (type === 'carrot') {
+    audio2.setAttribute('src', './sound/carrot_pull.mp3');
+    audio2.play();
+  } else if (type === 'win') {
+    audio.setAttribute('src', './sound/game_win.mp3');
+    audio.play();
+  }
+}
+
+
 function createStopBtn() {
   stopBtn = document.createElement('button');
   stopBtn.setAttribute('class','stop-btn play-btn');
   stopBtn.setAttribute('type', 'button');
   stopBtn.innerHTML = '■';
   stopBtn.addEventListener('click', ()=>{
+    playSound('pause');
     stopGame('replay?');
   });
   
@@ -66,6 +93,7 @@ function startTimer() {
     timer.innerHTML = `00:${time}`;
     if(time < 1) {
       clearInterval(interval);
+      playSound('lose');
       stopGame('YOU LOSE');
     }
   }, 1000);
@@ -98,6 +126,7 @@ function popUp(result) {
 
 
 function carrotCounting() {
+  carrotCount = 10;
   carrcotCounter.innerHTML = carrotCount;
 }
 
@@ -147,9 +176,11 @@ main.addEventListener('click', (e)=> {
   console.log(dataId);
 // 화면 클릭 시, 당근과 같은 data-set이면 carrotCount--
   if(dataId === 'carrot') {
+    playSound('carrot');
     main.removeChild(e.target);
     carrotCount--;
     if(carrotCount === 0) {
+      playSound('win');
       stopGame('YOU WIN!');
     }
     carrcotCounter.innerHTML = carrotCount;
@@ -157,6 +188,7 @@ main.addEventListener('click', (e)=> {
 
 // 버그와 같은 data-set이면 stopGame('YOU LOSE');
   if(dataId === 'bug') {
+    playSound('bug');
     stopGame('YOU LOSE');
   }
 });
