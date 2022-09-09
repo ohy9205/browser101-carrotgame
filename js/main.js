@@ -9,53 +9,66 @@ const body = document.querySelector('body');
 const audio = document.createElement('audio');
 const audio2 = document.createElement('audio');
 
-let stopBtn;
-
-let carrotCount;
-let time;
 let interval;
 
-playBtn.addEventListener('click', ()=>{
-
-  startGame();
-
+body.addEventListener('click', (e) => {
+  let dataType = e.target.dataset.type;
+  if(dataType === 'playBtn') {
+    startGame();
+  } else if(dataType === 'stopBtn') {
+    stopGame('pause');
+  } else if (dataType === 'replayBtn') {
+    replayGame();
+  } else if (dataType === 'carrot') {
+    removeCarrot(e);
+  } else if (dataType === 'bug') {
+    clickBug();
+  }
 });
 
+/**게임 시작 */
 function startGame() {
-
-  // 버튼변경 
-  createStopBtn();
-
-  // 당근, 벌레 생성
+  changeBtn();
   createCarrotAndBug();
-
-  // 타이머
-  startTimer();
-
-  // 당근 수
+  interval = startTimer();
   carrotCounting();
-  
-  // 음악
   playSound('play');
 }
 
-function stopGame(popupText) {
-  //  버튼 제거
-  playContainer.removeChild(stopBtn);
-  // 타이머 정지
+/**게임 정지 */
+function stopGame(result) {
+  playBtn.style.visibility = 'hidden';
   clearInterval(interval);
-  // 팝업 생성
-  popUp(popupText);
+
+  if (result === 'pause') {
+    playSound('alert');
+    popUp('replay?');
+  } else if(result === 'lost') {
+    playSound('alert');
+    popUp('YOU LOST');
+  } else if (result === 'win') {
+    playSound('win');
+    popUp('!YOU WIN!');
+  } else if (result === 'bug') {
+    playSound('bug');
+    popUp('YOU LOST');
+  } 
 }
 
+/**게임 재시작 */
+function replayGame() {
+  main.innerHTML = "";
+  let popup = document.querySelector('.popup-container');
+  body.removeChild(popup);
+  startGame();
+}
 
-// 입력 data set에따라서 사운드가 다르게 나오게...
+/**소리 재생 */
 function playSound(type) {
-
   if(type === 'play') {
     audio.setAttribute('src', './sound/bg.mp3');
     audio.play();
-  } else if (type === 'lose' || type === 'pause') {
+  } else if (type === 'alert') {
     audio.setAttribute('src', './sound/alert.wav');
     audio.play();
   } else if (type === 'bug') {
@@ -70,82 +83,51 @@ function playSound(type) {
   }
 }
 
-
-function createStopBtn() {
-  stopBtn = document.createElement('button');
-  stopBtn.setAttribute('class','stop-btn play-btn');
-  stopBtn.setAttribute('type', 'button');
-  stopBtn.innerHTML = '■';
-  stopBtn.addEventListener('click', ()=>{
-    playSound('pause');
-    stopGame('replay?');
-  });
-  
-  playContainer.replaceChildren(stopBtn);
+/**버튼 변경 */
+function changeBtn() {
+  playBtn.style.visibility = 'visible';
+  playBtn.setAttribute('class', 'stop-btn play-btn');
+  playBtn.setAttribute('data-type', 'stopBtn');
+  playBtn.innerHTML = '■';
 }
 
-
+/**타이머 시작 */
 function startTimer() {  
-  time = 5;
+  let time = 10;
   timer.innerHTML = `00:${time}`;
-  interval = setInterval(()=> {
+  return setInterval(()=> {
     time--;
     timer.innerHTML = `00:${time}`;
     if(time < 1) {
-      clearInterval(interval);
-      playSound('lose');
-      stopGame('YOU LOSE');
+      stopGame('lost');
     }
   }, 1000);
 }
 
-
+/**팝업창 생성 */
 function popUp(result) {
   const popup = document.createElement('div');
   popup.setAttribute('class','popup-container');
   popup.innerHTML = `
     <div class='popup'>
-      <button type='button' class='replay-btn play-btn' data-type='replay'>⭮</button>
+      <button type='button' class='replay-btn play-btn' data-type='replayBtn'>⭮</button>
       <p class='popup-text'>${result}</p>
     </div>
       `;
   body.appendChild(popup);
-
-  const replayBtn = document.querySelector('.replay-btn');
-  replayBtn.addEventListener('click', ()=> {
-    let imgs = document.querySelectorAll('img');
-    console.log(imgs);
-    for(let i=0; i<imgs.length; i++) {
-      main.removeChild(imgs[i]);
-    }
-    startGame();
-    body.removeChild(popup);
-    
-  });
 }
 
-
-function carrotCounting() {
-  carrotCount = 10;
-  carrcotCounter.innerHTML = carrotCount;
-}
-
+/**이미지 랜덤 배치 */
 function createCarrotAndBug() {
-  console.log('start');
   let mainWidth = main.clientWidth;
   let mainHeight = main.clientHeight;
   let x = mainWidth - 80;
   let y = mainHeight - 80;
-  let widthMin = 0;
-  let widthMax = x;
-  let heightMin = 0;
-  let heightMax = y;
-
   
   for(let i=0; i<10; i++) {
     const carrot = document.createElement('img');
     carrot.setAttribute('src', '../img/carrot.png');
-    carrot.setAttribute('data-id', 'carrot');
+    carrot.setAttribute('data-type', 'carrot');
     carrot.style.display = 'absolute';
     let randomX = Math.floor((Math.random()*x)+0);
     let randomY =  Math.floor((Math.random()*y)+0);
@@ -157,7 +139,7 @@ function createCarrotAndBug() {
   for(let i=0; i<7; i++) {
     const bug = document.createElement('img');
     bug.setAttribute('src', '../img/bug.png');
-    bug.setAttribute('data-id', 'bug');
+    bug.setAttribute('data-type', 'bug');
     bug.style.display = 'absolute';
     let randomX = Math.floor((Math.random()*x)+1)-0;
     let randomY =  Math.floor((Math.random()*y)+1)-0;
@@ -167,28 +149,23 @@ function createCarrotAndBug() {
   }
 }
 
-main.addEventListener('click', (e)=> {
-  if(document.querySelector('.popup')) {
-    e.preventDefault();
-  }
+/**당근 제거 */
+function removeCarrot(e) {
+  playSound('carrot');
+  main.removeChild(e.target);
+  carrotCounting();
+}
 
-  dataId = e.target.dataset.id;
-  console.log(dataId);
-// 화면 클릭 시, 당근과 같은 data-set이면 carrotCount--
-  if(dataId === 'carrot') {
-    playSound('carrot');
-    main.removeChild(e.target);
-    carrotCount--;
-    if(carrotCount === 0) {
-      playSound('win');
-      stopGame('YOU WIN!');
-    }
-    carrcotCounter.innerHTML = carrotCount;
+/**당근 갯수 카운트 */
+function carrotCounting() {
+  let carrotCount = document.querySelectorAll("[data-type='carrot'").length;
+  carrcotCounter.innerHTML = carrotCount;
+  if(carrotCount === 0) {
+    stopGame('win');
   }
+}
 
-// 버그와 같은 data-set이면 stopGame('YOU LOSE');
-  if(dataId === 'bug') {
-    playSound('bug');
-    stopGame('YOU LOSE');
-  }
-});
+/**벌레 클릭 */
+function clickBug() {
+  stopGame('bug');
+}
