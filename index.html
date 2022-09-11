@@ -6,20 +6,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="./css/style.css" rel = "stylesheet">
   <script src="./js/main.js" defer></script>
+  <script 
+    src="https://kit.fontawesome.com/6db4414501.js" 
+    crossorigin="anonymous">
+  </script>
   <title>carrot-game</title>
 </head>
 <body>
-  <div class="play-container">
-    <button type="button" class="play-btn" data-type="playBtn">▶</button>
-  </div>
-  <div class="timer-container">
-    <p class="timer">00:00</p>
-  </div>
-  <div class="carrot-counter-container">
-    <p class="carrot-counter">0</p>
-  </div>
-  <div class="main-container">
-    <div class="main"></div>
-  </div>
+  <section class="game">
+    <header class="game-header">
+      <button class="game-button">
+        <i class="fa-solid fa-play"></i>
+      </button>
+      <span class="game-timer">0:0</span>
+      <span class="game-score">9</span>
+    </header>
+    <section class="game-field">
+      //당근,벌레 표시되는 곳
+    </section>
+  </section>
+  <section class="pop-up">
+    <button class="pop-up-refresh">
+      <i class="fa-sharp fa-solid fa-rotate-right"></i>
+    </button>
+    <span class="pop-up-message">Hello</span>
+  </section>
 </body>
 </html>
