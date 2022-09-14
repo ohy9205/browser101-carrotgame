@@ -1,5 +1,9 @@
 @import "./common.css";
 
+body {
+  background-color: black;
+}
+
 .game {
   display: flex; /*게임 필드를 height: 100%로 설정할 때 팝업 영역으로 넘어가지 않도록 */
   flex-direction: column;
@@ -23,10 +27,11 @@
   border: 4px solid #333;
   font-size: 30px;
   border-radius: 10px;
-  transition: transform 300ms ease-in;
+  transition: transform 200ms ease-in;
 }
 
-.game-button:hover {
+.game-button:hover,
+.pop-up-refresh:hover {
   transform: scale(1.1);
 }
 
@@ -38,6 +43,7 @@
   font-size: 32px;
   border-radius: 20px;
   margin-top: 8px;
+  user-select: none;
 }
 
 .game-score {
@@ -49,7 +55,7 @@
   background-color: darksalmon;
   border: 5px solid #333;
   border-radius: 50%;
-  margin-top: 8px;
+  user-select: none;
 }
 
 .game-field {
@@ -57,6 +63,11 @@
   height: 100%;
   margin-top: 40px;
   position: relative;
+}
+
+.carrot:hover,
+.bug:hover {
+  transform: scale(1.1);
 }
 
 .pop-up {

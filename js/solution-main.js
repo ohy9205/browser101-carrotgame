@@ -3,7 +3,7 @@
 const CARROT_SIZE = 80;
 const CARROT_COUNT = 10;
 const BUG_COUNT = 7;
-const GAME_DURATION_SEC = 5;
+const GAME_DURATION_SEC = 10;
 
 const gameField = document.querySelector('.game-field');
 const fieldRect = gameField.getBoundingClientRect(); // 이미지 랜덤 배치를 위해 filed의  전체적인 사이즈와 위치 알아내기
@@ -73,7 +73,6 @@ gameField.addEventListener('click', onFieldClick); // (e) => onFieldClick(e) 생
 /**게임 리플레이 클릭 이벤트 처리 */
 gamePopUpRefresh.addEventListener('click', ()=>{
   startGame();
-  showStartBtn();
   hidePopUp();
 });
 
@@ -107,16 +106,12 @@ function showStopBtn() {
   const icon = gameBtn.querySelector('.fa-solid');
   icon.classList.add('fa-stop');
   icon.classList.remove('fa-play');
+  gameBtn.style.visibility = 'visible';
 }
 
 /**게임 정지 시 버튼을 숨김 */
 function hideStartBtn() {
   gameBtn.style.visibility = 'hidden';
-}
-
-/**게임 replay 시 버튼을 보임 */
-function showStartBtn() {
-  gameBtn.style.visibility = 'visible';
 }
 
 /**타이머 시작 */
