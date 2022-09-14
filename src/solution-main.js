@@ -1,5 +1,7 @@
 'use strict';
 
+import PopUp from './popup.js';
+
 const CARROT_SIZE = 80;
 const CARROT_COUNT = 10;
 const BUG_COUNT = 7;
@@ -10,9 +12,9 @@ const fieldRect = gameField.getBoundingClientRect(); // 이미지 랜덤 배치�
 const gameBtn = document.querySelector('.game-button');
 const gameTimer = document.querySelector('.game-timer');
 const gameScore = document.querySelector('.game-score');
-const gamePopUp = document.querySelector('.pop-up');
-const gamePopUpMessage = document.querySelector('.pop-up-message');
-const gamePopUpRefresh = document.querySelector('.pop-up-refresh');
+// const gamePopUp = document.querySelector('.pop-up');
+// const gamePopUpMessage = document.querySelector('.pop-up-message');
+// const gamePopUpRefresh = document.querySelector('.pop-up-refresh');
 
 const carrotSound = new Audio('../sound/carrot_pull.mp3');
 const bugSound = new Audio('../sound/bug_pull.mp3');
@@ -24,6 +26,10 @@ const winSound = new Audio('../sound/game_win.mp3');
 let started = false;
 let score = 0;
 let timer = undefined;
+
+// PopUp클래스의 인스턴스 생성
+const gameFinishPopup = new PopUp();
+gameFinishPopup.setClickListener(startGame);
 
 gameBtn.addEventListener('click', ()=>{
   if(started) {
@@ -48,7 +54,7 @@ function stopGame() {
   playSound(alertSound);
   stopGameTimer(); // 타이머 정지
   hideStartBtn();// 상단 버튼 사라짐
-  showPopUpWithText('REPLAY?');// 팝업 등장
+  gameFinishPopup.showWithText('REPLAY?'); // 팝업 등장
   started = false; // 게임 상태 변경
 }
 
@@ -59,10 +65,10 @@ function finishGame(win) {
   hideStartBtn();
   if(win) {
     playSound(winSound);
-    showPopUpWithText('YOU WIN🎉');
+    gameFinishPopup.showWithText('YOU WIN🎉'); // 팝업 등장
   } else {
     playSound(bugSound);
-    showPopUpWithText('YOU LOST💥')
+    gameFinishPopup.showWithText('YOU LOST💥'); // 팝업 등장
   }
   stopSound(bgSound);
 }
@@ -71,10 +77,11 @@ function finishGame(win) {
 gameField.addEventListener('click', onFieldClick); // (e) => onFieldClick(e) 생략된것
 
 /**게임 리플레이 클릭 이벤트 처리 */
-gamePopUpRefresh.addEventListener('click', ()=>{
-  startGame();
-  hidePopUp();
-});
+// gamePopUpRefresh.addEventListener('click', ()=>{
+//   startGame();
+// });
+
+
 
 /**필드 클릭 시 동작 구현*/
 function onFieldClick(e) {
@@ -177,15 +184,10 @@ function randomNumber(min, max) {
 }
 
 /**팝업 창 등장 */
-function showPopUpWithText(text) {
-  gamePopUpMessage.innerText = text;
-  gamePopUp.classList.remove('pop-up-hide');
-}
-
-/**팝업 창 숨기기 */
-function hidePopUp() {
-  gamePopUp.classList.add('pop-up-hide');
-}
+// function showPopUpWithText(text) {
+//   gamePopUpMessage.innerText = text;
+//   gamePopUp.classList.remove('pop-up-hide');
+// }
 
 /**사운드 재생 */
 function playSound(sound) {
