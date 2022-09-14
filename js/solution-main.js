@@ -14,6 +14,12 @@ const gamePopUp = document.querySelector('.pop-up');
 const gamePopUpMessage = document.querySelector('.pop-up-message');
 const gamePopUpRefresh = document.querySelector('.pop-up-refresh');
 
+const carrotSound = new Audio('../sound/carrot_pull.mp3');
+const bugSound = new Audio('../sound/bug_pull.mp3');
+const bgSound = new Audio('../sound/bg.mp3');
+const alertSound = new Audio('../sound/alert.wav');
+const winSound = new Audio('../sound/game_win.mp3');
+
 // 게임의 상태를 기억하는 변수들
 let started = false;
 let score = 0;
@@ -29,6 +35,7 @@ gameBtn.addEventListener('click', ()=>{
 
 /**게임 시작 함수 */
 function startGame() {
+  playSound(bgSound);
   initGame(); // 벌레,당근 생성, 당근 갯수 초기화
   showStopBtn(); // 정지 버튼으로 변경
   startGameTimer(); // 타이머 시작
@@ -37,6 +44,8 @@ function startGame() {
 
 /**게임 정지 함수 */
 function stopGame() {
+  stopSound(bgSound);
+  playSound(alertSound);
   stopGameTimer(); // 타이머 정지
   hideStartBtn();// 상단 버튼 사라짐
   showPopUpWithText('REPLAY?');// 팝업 등장
@@ -48,7 +57,14 @@ function finishGame(win) {
   started = false;
   stopGameTimer(); 
   hideStartBtn();
-  showPopUpWithText(win? 'YOU WIN🎉' : 'YOU LOST💥');
+  if(win) {
+    playSound(winSound);
+    showPopUpWithText('YOU WIN🎉');
+  } else {
+    playSound(bugSound);
+    showPopUpWithText('YOU LOST💥')
+  }
+  stopSound(bgSound);
 }
 
 /**당근, 버튼 클릭 이벤트 처리 */
@@ -68,6 +84,7 @@ function onFieldClick(e) {
   }
   const target = e.target;
   if(target.matches('.carrot')) {
+    playSound(carrotSound);
     target.remove();
     score++;
     updateScore();
@@ -75,6 +92,7 @@ function onFieldClick(e) {
       finishGame(true);
     }
   } else if(target.matches('.bug')) {
+    playSound(bugSound);
     finishGame(false);
   }
 }
@@ -96,6 +114,7 @@ function hideStartBtn() {
   gameBtn.style.visibility = 'hidden';
 }
 
+/**게임 replay 시 버튼을 보임 */
 function showStartBtn() {
   gameBtn.style.visibility = 'visible';
 }
@@ -171,4 +190,15 @@ function showPopUpWithText(text) {
 /**팝업 창 숨기기 */
 function hidePopUp() {
   gamePopUp.classList.add('pop-up-hide');
+}
+
+/**사운드 재생 */
+function playSound(sound) {
+  sound.currentTime = 0;
+  sound.play();
+}
+
+/**사운드 정지 */
+function stopSound(sound) {
+  sound.pause();
 }
