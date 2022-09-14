@@ -1,8 +1,7 @@
 'use strict';
 
+import * as sound from './sound.js';
 
-const carrotSound = new Audio('../sound/carrot_pull.mp3');
-const bugSound = new Audio('../sound/bug_pull.mp3');
 const CARROT_SIZE = 80;
 
 export default class Field {
@@ -54,22 +53,15 @@ export default class Field {
   onclick(event) {
     const target = event.target;
     if(target.matches('.carrot')) {
-      playSound(carrotSound);
+      sound.playsoundCarrot();
       target.remove();
       this.onItemClick && this.onItemClick('carrot');
     } else if(target.matches('.bug')) {
       this.onItemClick && this.onItemClick('bug');
-      playSound(bugSound);
+      sound.playsoundBug();
     }
   }
 }
-
-  /**사운드 재생 */
-function playSound(sound) {
-  sound.currentTime = 0;
-  sound.play();
-}
-
 
 /**당근, 벌레의 좌표값을 랜덤하게 뽑음 */
 function randomNumber(min, max) {
