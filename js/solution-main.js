@@ -6,8 +6,7 @@ const BUG_COUNT = 7;
 const GAME_DURATION_SEC = 5;
 
 const gameField = document.querySelector('.game-field');
-// 이미지 랜덤 배치를 위해 filed의  전체적인 사이즈와 위치 알아내기
-const fieldRect = gameField.getBoundingClientRect();
+const fieldRect = gameField.getBoundingClientRect(); // 이미지 랜덤 배치를 위해 filed의  전체적인 사이즈와 위치 알아내기
 const gameBtn = document.querySelector('.game-button');
 const gameTimer = document.querySelector('.game-timer');
 const gameScore = document.querySelector('.game-score');
@@ -26,7 +25,6 @@ gameBtn.addEventListener('click', ()=>{
   } else {
     startGame();
   }
-  started = !started; // 게임 상태 변경
 });
 
 /**게임 시작 함수 */
@@ -34,6 +32,7 @@ function startGame() {
   initGame(); // 벌레,당근 생성, 당근 갯수 초기화
   showStopBtn(); // 정지 버튼으로 변경
   startGameTimer(); // 타이머 시작
+  started = true; // 게임 상태 변경
 }
 
 /**게임 정지 함수 */
@@ -41,11 +40,53 @@ function stopGame() {
   stopGameTimer(); // 타이머 정지
   hideStartBtn();// 상단 버튼 사라짐
   showPopUpWithText('REPLAY?');// 팝업 등장
+  started = false; // 게임 상태 변경
+}
+
+/**게임 종료 함수 */
+function finishGame(win) {
+  started = false;
+  stopGameTimer(); 
+  hideStartBtn();
+  showPopUpWithText(win? 'YOU WIN🎉' : 'YOU LOST💥');
+}
+
+/**당근, 버튼 클릭 이벤트 처리 */
+gameField.addEventListener('click', onFieldClick); // (e) => onFieldClick(e) 생략된것
+
+/**게임 리플레이 클릭 이벤트 처리 */
+gamePopUpRefresh.addEventListener('click', ()=>{
+  startGame();
+  showStartBtn();
+  hidePopUp();
+});
+
+/**필드 클릭 시 동작 구현*/
+function onFieldClick(e) {
+  if(!started) { // 게임이 시작되지 않았으면 함수 리턴
+    return;
+  }
+  const target = e.target;
+  if(target.matches('.carrot')) {
+    target.remove();
+    score++;
+    updateScore();
+    if(score === CARROT_COUNT) {
+      finishGame(true);
+    }
+  } else if(target.matches('.bug')) {
+    finishGame(false);
+  }
+}
+
+/**당근 카운트 업데이트 */
+function updateScore() {
+  gameScore.innerText = CARROT_COUNT - score;
 }
 
 /**버튼을 중지버튼으로 변경 */
 function showStopBtn() {
-  const icon = gameBtn.querySelector('.fa-play');
+  const icon = gameBtn.querySelector('.fa-solid');
   icon.classList.add('fa-stop');
   icon.classList.remove('fa-play');
 }
@@ -55,6 +96,10 @@ function hideStartBtn() {
   gameBtn.style.visibility = 'hidden';
 }
 
+function showStartBtn() {
+  gameBtn.style.visibility = 'visible';
+}
+
 /**타이머 시작 */
 function startGameTimer() {
   let remainingTimeSec = GAME_DURATION_SEC; // 남은 시간동안 setInerval이 실행되게 만든다
@@ -62,6 +107,7 @@ function startGameTimer() {
   timer = setInterval(()=>{
     if(remainingTimeSec <= 0) {
       clearInterval(timer);
+      finishGame(CARROT_COUNT === score);
       return;
     }
     updateTimerText(--remainingTimeSec);
@@ -86,6 +132,7 @@ function initGame() {
   addItem('carrot', CARROT_COUNT, '../img/carrot.png');
   addItem('bug', BUG_COUNT, '../img/bug.png');
   gameScore.innerHTML = CARROT_COUNT;
+  score = 0;
 }
 
 /**게임 필드에 아이템을 추가 */
@@ -115,8 +162,13 @@ function randomNumber(min, max) {
   return Math.random()*(max-min)+min;
 }
 
-/**팝업 창 등장, 초기화 기능 */
+/**팝업 창 등장 */
 function showPopUpWithText(text) {
   gamePopUpMessage.innerText = text;
   gamePopUp.classList.remove('pop-up-hide');
+}
+
+/**팝업 창 숨기기 */
+function hidePopUp() {
+  gamePopUp.classList.add('pop-up-hide');
 }
