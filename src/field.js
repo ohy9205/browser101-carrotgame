@@ -50,7 +50,7 @@ export default class Field {
   }
 
   /**필드를 클릭하면 발생하는 동작 */
-  onclick(event) {
+  onclick = (event) => {
     const target = event.target;
     if(target.matches('.carrot')) {
       sound.playsoundCarrot();

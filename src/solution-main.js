@@ -88,7 +88,7 @@ function finishGame(win) {
     sound.playsoundBug();
     gameFinishPopup.showWithText('YOU LOST💥'); // 팝업 등장
   }
-  stopSound(bgSound);
+  sound.stopsoundBg();
 }
 
 /**당근 카운트 업데이트 */
