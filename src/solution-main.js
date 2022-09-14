@@ -1,20 +1,18 @@
 'use strict';
 
 import PopUp from './popup.js';
+import Field from './field.js';
 
 const CARROT_SIZE = 80;
 const CARROT_COUNT = 10;
 const BUG_COUNT = 7;
 const GAME_DURATION_SEC = 10;
 
-const gameField = document.querySelector('.game-field');
-const fieldRect = gameField.getBoundingClientRect(); // 이미지 랜덤 배치를 위해 filed의  전체적인 사이즈와 위치 알아내기
+// const gameField = document.querySelector('.game-field');
+// const fieldRect = gameField.getBoundingClientRect(); // 이미지 랜덤 배치를 위해 filed의  전체적인 사이즈와 위치 알아내기
 const gameBtn = document.querySelector('.game-button');
 const gameTimer = document.querySelector('.game-timer');
 const gameScore = document.querySelector('.game-score');
-// const gamePopUp = document.querySelector('.pop-up');
-// const gamePopUpMessage = document.querySelector('.pop-up-message');
-// const gamePopUpRefresh = document.querySelector('.pop-up-refresh');
 
 const carrotSound = new Audio('../sound/carrot_pull.mp3');
 const bugSound = new Audio('../sound/bug_pull.mp3');
@@ -30,6 +28,27 @@ let timer = undefined;
 // PopUp클래스의 인스턴스 생성
 const gameFinishPopup = new PopUp();
 gameFinishPopup.setClickListener(startGame);
+
+// Field클래스의 인스턴스 생성
+const gameField = new Field(CARROT_COUNT, BUG_COUNT);
+gameField.setClickListener(onItemClick);
+
+/**필드 클릭 시 동작 구현*/
+function onItemClick(item) {
+  if(!started) { // 게임이 시작되지 않았으면 함수 리턴
+    return;
+  }
+  if(item === 'carrot') {
+    score++;
+    updateScore();
+    if(score === CARROT_COUNT) {
+      finishGame(true);
+    }
+  } else if(item === 'bug') {
+    finishGame(false);
+  }
+}
+
 
 gameBtn.addEventListener('click', ()=>{
   if(started) {
@@ -74,34 +93,8 @@ function finishGame(win) {
 }
 
 /**당근, 버튼 클릭 이벤트 처리 */
-gameField.addEventListener('click', onFieldClick); // (e) => onFieldClick(e) 생략된것
+// gameField.addEventListener('click', onFieldClick); // (e) => onFieldClick(e) 생략된것
 
-/**게임 리플레이 클릭 이벤트 처리 */
-// gamePopUpRefresh.addEventListener('click', ()=>{
-//   startGame();
-// });
-
-
-
-/**필드 클릭 시 동작 구현*/
-function onFieldClick(e) {
-  if(!started) { // 게임이 시작되지 않았으면 함수 리턴
-    return;
-  }
-  const target = e.target;
-  if(target.matches('.carrot')) {
-    playSound(carrotSound);
-    target.remove();
-    score++;
-    updateScore();
-    if(score === CARROT_COUNT) {
-      finishGame(true);
-    }
-  } else if(target.matches('.bug')) {
-    playSound(bugSound);
-    finishGame(false);
-  }
-}
 
 /**당근 카운트 업데이트 */
 function updateScore() {
@@ -149,44 +142,39 @@ function updateTimerText(remainingTimeSec) {
 
 /**벌레, 당근 생성, 당근갯수 카운트 초기화 */
 function initGame() {
-  gameField.innerHTML = '';
-  addItem('carrot', CARROT_COUNT, '../img/carrot.png');
-  addItem('bug', BUG_COUNT, '../img/bug.png');
+  // gameField.innerHTML = '';
+  // addItem('carrot', CARROT_COUNT, '../img/carrot.png');
+  // addItem('bug', BUG_COUNT, '../img/bug.png');
   gameScore.innerHTML = CARROT_COUNT;
   score = 0;
+  gameField.init();
 }
 
 /**게임 필드에 아이템을 추가 */
-function addItem(className, count, imgPath) {
-  /*랜덤할 숫자를 만들 범위 설정
-    이미지가 튀어나가지 않게 전체 범위에서 이미지 사이즈를 빼준다*/
-  const x1 = 0;
-  const y1 = 0;
-  const x2 = fieldRect.width-CARROT_SIZE;
-  const y2 = fieldRect.height-CARROT_SIZE;
+// function addItem(className, count, imgPath) {
+//   /*랜덤할 숫자를 만들 범위 설정
+//     이미지가 튀어나가지 않게 전체 범위에서 이미지 사이즈를 빼준다*/
+//   const x1 = 0;
+//   const y1 = 0;
+//   const x2 = fieldRect.width-CARROT_SIZE;
+//   const y2 = fieldRect.height-CARROT_SIZE;
 
-  for(let i=0; i<count; i++) {
-    const item = document.createElement('img');
-    item.setAttribute('class', className);
-    item.setAttribute('src', imgPath);
-    item.style.position = 'absolute';
-    const x = randomNumber(x1, x2);
-    const y = randomNumber(y1, y2);
-    item.style.left = `${x}px`;
-    item.style.top = `${y}px`;
-    gameField.appendChild(item);
-  }
-}
+//   for(let i=0; i<count; i++) {
+//     const item = document.createElement('img');
+//     item.setAttribute('class', className);
+//     item.setAttribute('src', imgPath);
+//     item.style.position = 'absolute';
+//     const x = randomNumber(x1, x2);
+//     const y = randomNumber(y1, y2);
+//     item.style.left = `${x}px`;
+//     item.style.top = `${y}px`;
+//     gameField.appendChild(item);
+//   }
+// }
 
 /**랜덤한 숫자(아이템 위치)를 뽑아냄 */
-function randomNumber(min, max) {
-  return Math.random()*(max-min)+min;
-}
-
-/**팝업 창 등장 */
-// function showPopUpWithText(text) {
-//   gamePopUpMessage.innerText = text;
-//   gamePopUp.classList.remove('pop-up-hide');
+// function randomNumber(min, max) {
+//   return Math.random()*(max-min)+min;
 // }
 
 /**사운드 재생 */
