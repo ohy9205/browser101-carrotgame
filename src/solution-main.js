@@ -2,6 +2,7 @@
 
 import PopUp from './popup.js';
 import {GameBuilder, Reason} from './game.js';
+import * as sound from './sound.js';
 
 // PopUp클래스의 인스턴스 생성
 const gameFinishPopup = new PopUp();
@@ -18,12 +19,15 @@ game.setGameStopListener((reason) => {
   switch(reason) {
     case Reason.cancle:
       message = 'REPLAY❓'
+      sound.playsoundAlert();
       break;
     case Reason.win:
       message = '🎉YOU WON🎉'
+      sound.playsoundWin();
       break;
     case Reason.lose:
       message = 'YOU LOST💥'
+      sound.playsoundBug();
       break;
     default:
     throw new Error('not valid reason');

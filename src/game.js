@@ -49,7 +49,7 @@ class Game {
     
     this.gameBtn.addEventListener('click', ()=>{
       if(this.started) {
-        this.stop();
+        this.stop(Reason.cancle);
       } else {
         this.start();
       }
@@ -80,16 +80,16 @@ class Game {
       this.score++;
       this.updateScore();
       if(this.score === this.carrotCount) {
-        this.finish(true);
+        this.stop(Reason.win);
       }
     } else if(item === 'bug') {
-      this.finish(false);
+      this.stop(Reason.lose);
     }
   }
 
     
   /**게임 시작 함수 */
-  start = () => {
+  start() {
     sound.playsoundBg();
     this.initGame(); // 벌레,당근 생성, 당근 갯수 초기화
     this.showStopBtn(); // 정지 버튼으로 변경
@@ -98,30 +98,28 @@ class Game {
   }
 
   /**게임 정지 함수 */
-  stop = () => {
+  stop(reason) {
     sound.stopsoundBg();
     sound.playsoundAlert();
     this.stopGameTimer(); // 타이머 정지
     this.hideStartBtn();// 상단 버튼 사라짐
     this.started = false; // 게임 상태 변경
     this.onGameStop && this.onGameStop(Reason.cancle);
-  }
 
-  /**게임 종료 함수 */
-  finish(win) {
-    this.started = false;
-    this.stopGameTimer(); 
-    this.hideStartBtn();
-    sound.stopsoundBg();
-    if(win) {
-      sound.playsoundWin();
-      this.onGameStop && this.onGameStop(Reason.win);
-    } else {
-      sound.playsoundBug();
-      this.onGameStop && this.onGameStop(Reason.lose);
+    switch(reason) {
+      case Reason.win:
+        this.onGameStop && this.onGameStop(Reason.win);
+        break;
+      case Reason.cancle:
+        this.onGameStop && this.onGameStop(Reason.cancle);
+        break;
+      case Reason.lose:
+        this.onGameStop && this.onGameStop(Reason.lose);
+        break;
+      default:
+        throw new Error('not valid reason');
     }
   }
-
 
 
 
@@ -145,7 +143,7 @@ class Game {
     this.timer = setInterval(()=>{
       if(remainingTimeSec <= 0) {
         clearInterval(this.timer);
-        this.finish(this.carrotCount === this.score);
+        this.stop(this.carrotCount === this.score? Reason.win : Reason.lose);
         return;
       }
       this.updateTimerText(--remainingTimeSec);
