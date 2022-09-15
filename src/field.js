@@ -4,7 +4,12 @@ import * as sound from './sound.js';
 
 const CARROT_SIZE = 80;
 
-export default class Field {
+export const ItemType = Object.freeze({
+  bug: 'bug',
+  carrot: 'carrot',
+});
+
+export class Field {
   constructor(carrotCount, bugCount) {
     this.gameField = document.querySelector('.game-field');
     this.fieldRect = this.gameField.getBoundingClientRect(); // 이미지 랜덤 배치를 위해 filed의  전체적인 사이즈와 위치 알아내기
@@ -55,9 +60,9 @@ export default class Field {
     if(target.matches('.carrot')) {
       sound.playsoundCarrot();
       target.remove();
-      this.onItemClick && this.onItemClick('carrot');
+      this.onItemClick && this.onItemClick(ItemType.carrot);
     } else if(target.matches('.bug')) {
-      this.onItemClick && this.onItemClick('bug');
+      this.onItemClick && this.onItemClick(ItemType.bug);
       sound.playsoundBug();
     }
   }

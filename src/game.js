@@ -1,7 +1,7 @@
 'use strict';
 
 import PopUp from './popup.js';
-import Field from './field.js';
+import {Field, ItemType} from './field.js';
 import * as sound from './sound.js';
 
 export const Reason = Object.freeze({
@@ -76,13 +76,13 @@ class Game {
     if(!this.started) { // 게임이 시작되지 않았으면 함수 리턴
       return;
     }
-    if(item === 'carrot') {
+    if(item === ItemType.carrot) {
       this.score++;
       this.updateScore();
       if(this.score === this.carrotCount) {
         this.stop(Reason.win);
       }
-    } else if(item === 'bug') {
+    } else if(item === ItemType.bug) {
       this.stop(Reason.lose);
     }
   }
