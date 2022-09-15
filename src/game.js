@@ -4,7 +4,14 @@ import PopUp from './popup.js';
 import Field from './field.js';
 import * as sound from './sound.js';
 
-export default class GameBuilder {
+export const Reason = Object.freeze({
+  win: 'win',
+  cancle: 'cancle',
+  lose: 'lose',
+});
+
+
+export class GameBuilder {
   gameDuration(duration) {
     this.gameDuration = duration;
     return this; 
@@ -97,7 +104,7 @@ class Game {
     this.stopGameTimer(); // 타이머 정지
     this.hideStartBtn();// 상단 버튼 사라짐
     this.started = false; // 게임 상태 변경
-    this.onGameStop && this.onGameStop('cancel');
+    this.onGameStop && this.onGameStop(Reason.cancle);
   }
 
   /**게임 종료 함수 */
@@ -108,10 +115,10 @@ class Game {
     sound.stopsoundBg();
     if(win) {
       sound.playsoundWin();
-      this.onGameStop && this.onGameStop('win');
+      this.onGameStop && this.onGameStop(Reason.win);
     } else {
       sound.playsoundBug();
-      this.onGameStop && this.onGameStop('lose');
+      this.onGameStop && this.onGameStop(Reason.lose);
     }
   }
 

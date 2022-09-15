@@ -1,14 +1,10 @@
 'use strict';
 
 import PopUp from './popup.js';
-import GameBuild from './game.js';
-import GameBuilder from './game.js';
+import {GameBuilder, Reason} from './game.js';
 
 // PopUp클래스의 인스턴스 생성
 const gameFinishPopup = new PopUp();
-gameFinishPopup.setClickListener(() => {
-  game.start();
-});
 
 // Game클래스의 인스턴스 생성
 const game = new GameBuilder()
@@ -20,17 +16,22 @@ const game = new GameBuilder()
 game.setGameStopListener((reason) => {
   let message;
   switch(reason) {
-    case 'cancel':
+    case Reason.cancle:
       message = 'REPLAY❓'
       break;
-    case 'win':
+    case Reason.win:
       message = '🎉YOU WON🎉'
       break;
-    case 'lose':
+    case Reason.lose:
       message = 'YOU LOST💥'
       break;
     default:
     throw new Error('not valid reason');
   }
   gameFinishPopup.showWithText(message);
+});
+
+/**팝업의 replay버튼을 누르면 게임 재시작 */
+gameFinishPopup.setClickListener(() => {
+  game.start();
 });
